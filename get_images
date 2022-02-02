@@ -1,0 +1,39 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
+
+driver = webdriver.Chrome()
+driver.get('https://search.yahoo.co.jp/image')
+xpath = '//*[@id="search"]/form/div[1]/div/input[1]'
+box = driver.find_element_by_xpath(xpath)
+word = 'イラスト　女の子'
+box.send_keys(word)
+box.send_keys(Keys.ENTER)
+
+last_height = driver.execute_script('return document.body.scrollHeight')
+i = 0
+
+while i<10:
+    i +=1
+    driver.execute_script('window.scrollTo(0,document.body.scrollHeight)')
+    time.sleep(2)
+    new_height = driver.execute_script('return document.body.scrollHeight')
+    try:
+        driver.find_element_by_xpath('//*[@id="more"]/div/button').click()
+        time.sleep(2)
+    except:
+        pass    
+    if new_height == last_height:
+        break
+    last_height = new_height
+
+num = 0
+for i in range(1, 100):
+    for j in range(100):
+        try:
+            driver.find_element_by_xpath('//*[@id="isr"]/div['+str(j)+']/div['+str(i)+']/figure/a/img').screenshot('downloads/('+word+')('+str(num)+').png')
+            num += 1
+        except:
+            pass
+        
+driver.quit()
